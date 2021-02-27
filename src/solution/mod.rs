@@ -5,3 +5,4 @@ mod detect_capital;
 mod get_equal_substrings_within_budget;
 mod flipping_an_image;
 mod transpose_matrix;
+mod number_of_valid_words_for_each_puzzle;
