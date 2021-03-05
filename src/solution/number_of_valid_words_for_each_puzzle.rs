@@ -3,35 +3,31 @@ pub struct Solution {}
 impl Solution {
     pub fn find_num_of_valid_words(words: Vec<String>, puzzles: Vec<String>) -> Vec<i32> {
         let mut results = vec![];
-        let mut words_hash = vec![];
+        let mut words_hash = vec![0u16; (2i32.pow(27) - 1) as usize];
         for word in &words {
-            let mut word_hash = 0;
+            let mut pos = 0;
             for w in word.chars() {
-                let pos = w as i32 - 'a' as i32;
-                word_hash = 1 << pos | word_hash;
+                let i = w as i32 - 'a' as i32;
+                pos = 1 << i | pos;
             }
-            words_hash.push(word_hash);
+            words_hash[pos] += 1;
         }
         for puzzle in &puzzles {
-            let mut hash = 0;
-            let mut first = -1;
-            for char in puzzle.chars() {
-                let pos = char as i32 - 'a' as i32;
-                if first == -1 {
-                    first = 1 << pos;
-                }
-                hash = 1 << pos | hash;
+            let f = 1 << (puzzle.chars().nth(0).unwrap() as i32 - 'a' as i32);
+            let mut pos = 0;
+            for c in puzzle.chars().skip(1) {
+                pos |= 1 << (c as i32 - 'a' as i32);
             }
-            let mut result = 0;
-            for &word_hash in &words_hash {
-                if (word_hash & hash) != word_hash {
-                    continue;
-                }
-                if (first & word_hash) == first {
-                    result += 1;
+            let mut sub: i32 = pos;
+            let mut count = 0;
+            loop {
+                sub = (sub - 1) & pos;
+                count += words_hash[(f | sub) as usize];
+                if sub == pos {
+                    break;
                 }
             }
-            results.push(result);
+            results.push(count as i32);
         }
         results
     }
